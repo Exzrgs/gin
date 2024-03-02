@@ -50,8 +50,6 @@ func cleanPath(p string) string {
 		buf[0] = '/'
 	}
 
-	trailing := n > 1 && p[n-1] == '/'
-
 	// A bit more clunky without a 'lazybuf' like the path package, but the loop
 	// gets completely inlined (bufApp calls).
 	// loop has no expensive function calls (except 1x make)		// So in contrast to the path package this loop has no expensive function
@@ -64,7 +62,6 @@ func cleanPath(p string) string {
 			r++
 
 		case p[r] == '.' && r+1 == n:
-			trailing = true
 			r++
 
 		case p[r] == '.' && p[r+1] == '/':
@@ -108,6 +105,7 @@ func cleanPath(p string) string {
 	}
 
 	// Re-append trailing slash
+	trailing := n > 1 && (p[n-1] == '/' || p[n-1] == '.')
 	if trailing && w > 1 {
 		bufApp(&buf, p, w, '/')
 		w++
